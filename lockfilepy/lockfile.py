@@ -1,6 +1,8 @@
 import os
 from requests.auth import HTTPBasicAuth
 
+from lockfilepy.exceptions import LolClientNotFound
+
 
 class Lockfile:
     def __init__(self) -> None:
@@ -13,7 +15,7 @@ class Lockfile:
             with open(self.path + "/lockfile", "r") as f:
                 self.data = f.readline().strip().split(":")
         except:
-            raise Exception("League of legends client was not found.")
+            raise LolClientNotFound
 
     @property
     def process(self) -> str:
