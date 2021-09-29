@@ -1,4 +1,3 @@
-import os
 import psutil
 from requests.auth import HTTPBasicAuth
 from typing import Optional
@@ -12,7 +11,7 @@ class Lockfile:
             process = [p for p in psutil.process_iter(attrs=['pid', 'name']) if p.info['name'] == 'LeagueClient.exe']
             if not process:
                 raise LolClientNotFound
-                
+
             self.path = process[0].cmdline()[0].rsplit("/", 1)[0]
             with open(self.path + "/lockfile", "r") as f:
                 self.data = f.readline().strip().split(":")
