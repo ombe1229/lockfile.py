@@ -1,4 +1,5 @@
 import os
+import psutil
 from requests.auth import HTTPBasicAuth
 from typing import Optional
 
@@ -8,11 +9,15 @@ from lockfilepy.exceptions import LolClientNotFound
 class Lockfile:
     def __init__(self, path: Optional[str] = None) -> None:
         if not path:
-            self.path = (
-                "C:\Riot Games\League of Legends"
-                if os.name == "nt"
-                else "/Applications/League of Legends.app/Contents/LoL"
-            )
+            process = [p for p in psutil.process_iter(attrs=['pid', 'name']) if p.info['name'] == 'LeagueClient.exe']
+            if len(process) > 0:
+                self.path = process[0].cmdline()[0].rsplit("/", 1)[0]
+            else:
+                self.path = (
+                    "C:\Riot Games\League of Legends"
+                    if os.name == "nt"
+                    else "/Applications/League of Legends.app/Contents/LoL"
+                )
         try:
             with open(self.path + "/lockfile", "r") as f:
                 self.data = f.readline().strip().split(":")
