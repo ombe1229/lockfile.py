@@ -8,7 +8,11 @@ from lockfilepy.exceptions import LolClientNotFound
 class Lockfile:
     def __init__(self, path: Optional[str] = None) -> None:
         if not path:
-            process = [p for p in psutil.process_iter(attrs=['pid', 'name']) if p.info['name'] == 'LeagueClient.exe']
+            process = [
+                p
+                for p in psutil.process_iter(attrs=["pid", "name"])
+                if p.info["name"] == "LeagueClient.exe"
+            ]
             if not process:
                 raise LolClientNotFound
 
