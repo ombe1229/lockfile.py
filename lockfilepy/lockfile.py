@@ -10,19 +10,12 @@ class Lockfile:
     def __init__(self, path: Optional[str] = None) -> None:
         if not path:
             process = [p for p in psutil.process_iter(attrs=['pid', 'name']) if p.info['name'] == 'LeagueClient.exe']
-            if len(process) > 0:
-                self.path = process[0].cmdline()[0].rsplit("/", 1)[0]
-            else:
-                self.path = (
-                    "C:\Riot Games\League of Legends"
-                    if os.name == "nt"
-                    else "/Applications/League of Legends.app/Contents/LoL"
-                )
-        try:
+            if not process:
+                raise LolClientNotFound
+                
+            self.path = process[0].cmdline()[0].rsplit("/", 1)[0]
             with open(self.path + "/lockfile", "r") as f:
                 self.data = f.readline().strip().split(":")
-        except:
-            raise LolClientNotFound
 
     @property
     def process(self) -> str:
