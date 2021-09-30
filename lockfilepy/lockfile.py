@@ -2,7 +2,7 @@ import psutil
 from requests.auth import HTTPBasicAuth
 from typing import Optional
 
-from lockfilepy.exceptions import LolClientNotFound
+from lockfilepy.exceptions import LockfileNotFound, LolClientNotFound
 
 
 class Lockfile:
@@ -15,10 +15,14 @@ class Lockfile:
             ]
             if not process:
                 raise LolClientNotFound
-
             self.path = process[0].cmdline()[0].rsplit("/", 1)[0]
+        else:
+            self.path = path
+        try:
             with open(self.path + "/lockfile", "r") as f:
                 self.data = f.readline().strip().split(":")
+        except FileNotFoundError:
+            raise LockfileNotFound
 
     @property
     def process(self) -> str:
